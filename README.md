@@ -1,3 +1,5 @@
+<p align="center"><img src="https://raw.githubusercontent.com/caryll/design/master/caryll-logo.png" width=200 height=200></p>
+
 **This repository contains the design proposals of Caryll, the parametric font-design software.**
 
 ## Origin
