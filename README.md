@@ -11,8 +11,59 @@ By introducing some concepts in the CAD software like Solidworks, the maintaince
 Caryll is a font-design software supports
 
 * Constraint solving.
-* Constructive geometry for glyphs' outline.
+* <del>Constructive geometry for glyphs' outline.</del> Overcomplicated. Discarded.
 * Advanced curve-modeling methods including Hobby's splines.
 * Automated glyph building for composites, small caps, superscripts, etc.
-* Advanced multiple-master interpolation powered by Kriging method.
+* Advanced multiple-master interpolation (may be powered by Kriging method).
 
+## File format
+
+BSON-based I think.
+
+Glyph structure:
+
+``` yaml
+name: 'E'
+local-equations: 
+    - name: stem
+      expr: whatever
+variables:
+	- master: Bold
+      parameters: [...]
+    - master: Thin
+      parameters: [...]
+free-variables: [t1] # variable used for proportions, etc.
+outlines:
+    - type: bez3
+      render: true # will be used as glyph outline
+      points: 
+          - [smooth p1 p2] # smooth on-curve
+          - [implicit tension] # implicit off-curve
+          - [directional tension] # direction-constrained implicit off-curve
+          - [smooth ...] # smooth on-curve
+          - [corner ...] # corner on-curve
+          - [explicit ...] # explicit off-curve
+          - [explicit ...]
+          - [cycle] # close contour
+    - type: include # include a glyph
+      id: a
+      points:
+        origin: [corner p1 p2]
+        ......
+      transform: [1 0 0 1]
+constraints:
+    - type: ppdistance
+      points: z1 z2
+      value: p1 # a variable
+    - type: pldistance
+      points: z1 z2 z3
+      value: t1 # .. and free variable used for proportions
+```
+
+The multiple-master interpolation follows this workflow:
+
+* Solve constraints for all masters.
+* Interpolate parameters for the specified instance.
+* Solve constraints for this instance.
+
+(Removing the third step will give ability to assign different constraints for different masters.)
